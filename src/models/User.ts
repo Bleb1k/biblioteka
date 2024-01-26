@@ -11,35 +11,22 @@ import { sign } from '@/helpers/jwt'
   schemaOptions: { timestamps: true },
 })
 export class User {
-  @prop({ index: true, lowercase: true })
-  email?: string
-  @prop({ index: true, lowercase: true })
-  facebookId?: string
-  @prop({ index: true })
-  telegramId?: number
   @prop({ index: true, required: true })
-  name!: string
+  firstName!: string
+  @prop({ index: true, required: true })
+  lastName!: string
+  @prop({ index: true, required: true })
+  patronymic!: string
+  @prop({ index: true })
+  class?: string
 
   @prop({ index: true, unique: true })
   token?: string
 
   strippedAndFilled(
     this: DocumentType<User>,
-    {
-      withExtra = false,
-      withToken = true,
-    }: { withExtra?: boolean; withToken?: boolean } = {}
   ) {
     const stripFields = ['createdAt', 'updatedAt', '__v']
-    if (!withExtra) {
-      stripFields.push('token')
-      stripFields.push('email')
-      stripFields.push('facebookId')
-      stripFields.push('telegramId')
-    }
-    if (!withToken) {
-      stripFields.push('token')
-    }
     return omit(this.toObject(), stripFields)
   }
 }
@@ -47,10 +34,10 @@ export class User {
 export const UserModel = getModelForClass(User)
 
 export async function findOrCreateUser(loginOptions: {
-  name: string
-  email?: string
-  facebookId?: string
-  telegramId?: number
+  firstName: string
+  lastName: string
+  patronymic: string
+  class?: string
 }) {
   const user = await UserModel.findOneAndUpdate(
     loginOptions,
