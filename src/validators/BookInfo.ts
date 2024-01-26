@@ -3,6 +3,8 @@ import { IsNumber, IsOptional, IsString } from 'amala'
 export default class BookInfo {
   @IsString()
   name!: string
+  @IsNumber()
+  amount!: number
   @IsOptional()
   @IsString()
   author?: string
