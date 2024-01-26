@@ -3,17 +3,17 @@ import { Context } from 'koa'
 import { Book, BookModel, findBooks, findOrCreateBook } from '@/models/Book'
 import { notFound } from '@hapi/boom'
 
-/**
- * Bookshelf controller
- * @route /bookshelf\
- *       POST /bookshelf
- *              body={
- *                name: string,
- *                author?: string
- *              }
- *       GET  /bookshelf?name=?{string}
- *                      &author=?{string}
- *                      &page=?{number}
+/*
+@Controller('/api/bookshelf')
+  @Post('/')
+    body = {
+      name!: string
+      author?: string
+    }
+  @Get('/')
+    @Query('name') name?: string,
+    @Query('author') author?: string,
+    @Query('page') page?: number
  */
 @Controller('/bookshelf')
 export default class BookshelfController {

@@ -11,7 +11,7 @@ import {
 import RecordInfo from '@/validators/RecordInfo'
 
 /*
-@Controller('/record')
+@Controller('/api/record')
   @Post('/new')
     body = {
       user!: string
@@ -26,8 +26,8 @@ import RecordInfo from '@/validators/RecordInfo'
     @Query('returnDate') returnDate?: string,
     @Query('retrievalDate') retrievalDate?: string,
     @Query('page') page?: number
-  @Put('/:id')
-
+  @Put('/retrieve')
+    @Query('id') id?: string
  */
 @Controller('/record')
 export default class RecordController {
