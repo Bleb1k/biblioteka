@@ -5,7 +5,7 @@ import {
   prop,
 } from '@typegoose/typegoose'
 import { omit } from 'lodash'
-import { sign } from '@/helpers/jwt'
+import BookInfo from '@/validators/BookInfo'
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -16,9 +16,7 @@ export class Book {
   @prop({ index: true })
   author?: string
 
-  strippedAndFilled(
-    this: DocumentType<Book>,
-  ) {
+  strippedAndFilled(this: DocumentType<Book>) {
     const stripFields = ['createdAt', 'updatedAt', '__v']
     return omit(this.toObject(), stripFields)
   }

@@ -15,8 +15,8 @@ export class User {
   firstName!: string
   @prop({ index: true, required: true })
   lastName!: string
-  @prop({ index: true, required: true })
-  patronymic!: string
+  @prop({ index: true })
+  patronymic?: string
   @prop({ index: true })
   class?: string
 
@@ -25,8 +25,12 @@ export class User {
 
   strippedAndFilled(
     this: DocumentType<User>,
+    { withToken = true }: { withToken?: boolean } = {}
   ) {
     const stripFields = ['createdAt', 'updatedAt', '__v']
+    if (!withToken) {
+      stripFields.push('token')
+    }
     return omit(this.toObject(), stripFields)
   }
 }
@@ -36,7 +40,7 @@ export const UserModel = getModelForClass(User)
 export async function findOrCreateUser(loginOptions: {
   firstName: string
   lastName: string
-  patronymic: string
+  patronymic?: string
   class?: string
 }) {
   const user = await UserModel.findOneAndUpdate(
