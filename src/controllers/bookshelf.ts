@@ -6,9 +6,14 @@ import { notFound } from '@hapi/boom'
 /**
  * Bookshelf controller
  * @route /bookshelf\
- *       POST /bookshelf\
- *       GET  /bookshelf\
- *       GET  /bookshelf?name=?{string}&author=?{string}&page=?{number}\
+ *       POST /bookshelf
+ *              body={
+ *                name: string,
+ *                author?: string
+ *              }
+ *       GET  /bookshelf?name=?{string}
+ *                      &author=?{string}
+ *                      &page=?{number}
  */
 @Controller('/bookshelf')
 export default class BookshelfController {

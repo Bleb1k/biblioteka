@@ -37,6 +37,17 @@ export class User {
 
 export const UserModel = getModelForClass(User)
 
+export async function findUsers(
+  filter: Map<string, unknown>,
+  page: number = 0
+) {
+  const limit = 10
+  const skip = page * limit
+  const users = await UserModel.find(filter).skip(skip).limit(limit)
+  if (!users) throw new Error('No users found')
+  return users
+}
+
 export async function findOrCreateUser(loginOptions: {
   firstName: string
   lastName: string

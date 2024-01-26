@@ -5,7 +5,6 @@ import {
   prop,
 } from '@typegoose/typegoose'
 import { omit } from 'lodash'
-import BookInfo from '@/validators/BookInfo'
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -13,8 +12,6 @@ import BookInfo from '@/validators/BookInfo'
 export class Book {
   @prop({ index: true, required: true })
   name!: string
-  @prop({ index: true, required: true })
-  amount!: number
   @prop({ index: true })
   author?: string
 
@@ -27,18 +24,18 @@ export class Book {
 export const BookModel = getModelForClass(Book)
 
 export async function findBooks(
-  filter: Record<string, unknown>,
+  filter: Map<string, unknown>,
   page: number = 0
 ) {
   const limit = 10
-  const skip = (page || 0) * limit
+  const skip = page * limit
   const books = await BookModel.find(filter).skip(skip).limit(limit)
   if (!books) throw new Error('No books found')
   return books
 }
+
 export async function findOrCreateBook(bookInfo: {
   name: string
-  amount: number
   author?: string
 }) {
   const book = await BookModel.findOneAndUpdate(
