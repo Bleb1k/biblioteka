@@ -13,7 +13,7 @@ export default async function () {
   const router = new Router()
   await bootstrapControllers({
     app,
-    basePath: '/api/',
+    basePath: '/',
     controllers: [resolve(__dirname, '../controllers/*')],
     disableVersioning: true,
     router,

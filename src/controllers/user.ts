@@ -3,31 +3,31 @@ import { Context } from 'koa'
 import { User, UserModel, findOrCreateUser, findUsers } from '@/models/User'
 import { forbidden } from '@hapi/boom'
 
-/*
-@Controller('/api/user')
-  @Post('/')
-    body = {
-      firstName: string
-      lastName: string
-      patronymic?: string
-      class?: string
-    }
-  @Get('/')
-    @Query('firstName') firstName?: string,
-    @Query('lastName') lastName?: string,
-    @Query('patronymic') patronymic?: string,
-    @Query('class') klass?: string,
-    @Query('page') page?: number
+/**
+ *@Controller('/user')
+ *  @Get('/new')
+ *    body = {
+ *      firstName: string
+ *      lastName: string
+ *      patronymic?: string
+ *      class?: string
+ *    }
+ *  @Get('/')
+ *    @Query('firstName') firstName?: string,
+ *    @Query('lastName') lastName?: string,
+ *    @Query('patronymic') patronymic?: string,
+ *    @Query('class') klass?: string,
+ *    @Query('page') page?: number
  */
 @Controller('/user')
 export default class UserController {
-  @Post('/')
+  @Post('/new')
   async newUser(@Body({ required: true }) body: User) {
     let user = await findOrCreateUser(body)
     return user.strippedAndFilled()
   }
 
-  @Get('/')
+  @Get('/search')
   async search(
     @Query('firstName') firstName?: string,
     @Query('lastName') lastName?: string,

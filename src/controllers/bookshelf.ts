@@ -4,7 +4,7 @@ import { Book, BookModel, findBooks, findOrCreateBook } from '@/models/Book'
 import { notFound } from '@hapi/boom'
 
 /*
-@Controller('/api/bookshelf')
+@Controller('/bookshelf')
   @Post('/')
     body = {
       name!: string
@@ -17,13 +17,13 @@ import { notFound } from '@hapi/boom'
  */
 @Controller('/bookshelf')
 export default class BookshelfController {
-  @Post('/')
+  @Get('/new')
   async newBook(@Body({ required: true }) body: Book) {
     const user = await findOrCreateBook(body)
     return user.strippedAndFilled()
   }
 
-  @Get('/')
+  @Get('/search')
   async search(
     @Query('name') name?: string,
     @Query('author') author?: string,

@@ -1,3 +1,4 @@
+import startsWith from '@/helpers/startsWith'
 import {
   DocumentType,
   getModelForClass,
@@ -29,7 +30,8 @@ export async function findBooks(
 ) {
   const limit = 10
   const skip = page * limit
-  const books = await BookModel.find(filter).skip(skip).limit(limit)
+
+  const books = await BookModel.find(startsWith(filter)).skip(skip).limit(limit)
   if (!books) throw new Error('No books found')
   return books
 }

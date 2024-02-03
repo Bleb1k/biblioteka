@@ -6,6 +6,7 @@ import {
 } from '@typegoose/typegoose'
 import { omit } from 'lodash'
 import { sign } from '@/helpers/jwt'
+import startsWith from '@/helpers/startsWith'
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -43,7 +44,8 @@ export async function findUsers(
 ) {
   const limit = 10
   const skip = page * limit
-  const users = await UserModel.find(filter).skip(skip).limit(limit)
+
+  const users = await UserModel.find(startsWith(filter)).skip(skip).limit(limit)
   if (!users) throw new Error('No users found')
   return users
 }

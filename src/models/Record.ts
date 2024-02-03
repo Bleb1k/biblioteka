@@ -9,6 +9,7 @@ import { omit } from 'lodash'
 import { User } from '@/models/User'
 import { Book } from '@/models/Book'
 import RecordInfo from '@/validators/RecordInfo'
+import startsWith from '@/helpers/startsWith'
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -37,7 +38,10 @@ export async function findRecords(
 ) {
   const limit = 10
   const skip = page * limit
-  const records = await RecordModel.find(filter).skip(skip).limit(limit)
+
+  const records = await RecordModel.find(startsWith(filter))
+    .skip(skip)
+    .limit(limit)
   if (!records) throw new Error('No records found')
   return records
 }

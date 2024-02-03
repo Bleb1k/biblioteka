@@ -11,7 +11,7 @@ import {
 import RecordInfo from '@/validators/RecordInfo'
 
 /*
-@Controller('/api/record')
+@Controller('/record')
   @Post('/new')
     body = {
       user!: string
