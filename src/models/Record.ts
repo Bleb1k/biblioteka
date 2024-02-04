@@ -1,3 +1,7 @@
+import { applyFilter } from '@/helpers/filter'
+import { Book } from '@/models/Book'
+import { User } from '@/models/User'
+import RecordInfo from '@/validators/RecordInfo'
 import {
   DocumentType,
   Ref,
@@ -6,10 +10,6 @@ import {
   prop,
 } from '@typegoose/typegoose'
 import { omit } from 'lodash'
-import { User } from '@/models/User'
-import { Book } from '@/models/Book'
-import RecordInfo from '@/validators/RecordInfo'
-import startsWith from '@/helpers/startsWith'
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -39,7 +39,7 @@ export async function findRecords(
   const limit = 10
   const skip = page * limit
 
-  const records = await RecordModel.find(startsWith(filter))
+  const records = await RecordModel.find(applyFilter(filter))
     .skip(skip)
     .limit(limit)
   if (!records) throw new Error('No records found')

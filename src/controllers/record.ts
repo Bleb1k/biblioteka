@@ -1,13 +1,6 @@
 import { Body, Controller, Ctx, Get, Params, Post, Put, Query } from 'amala'
-import { Context } from 'koa'
-import { Book, BookModel, findBooks, findOrCreateBook } from '@/models/Book'
 import { badRequest, notFound } from '@hapi/boom'
-import {
-  Record,
-  RecordModel,
-  findOrCreateRecord,
-  findRecords,
-} from '@/models/Record'
+import { RecordModel, findOrCreateRecord, findRecords } from '@/models/Record'
 import RecordInfo from '@/validators/RecordInfo'
 
 /*

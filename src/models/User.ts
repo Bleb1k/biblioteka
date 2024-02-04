@@ -6,7 +6,7 @@ import {
 } from '@typegoose/typegoose'
 import { omit } from 'lodash'
 import { sign } from '@/helpers/jwt'
-import startsWith from '@/helpers/startsWith'
+import { applyFilter } from '@/helpers/filter'
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -45,25 +45,59 @@ export async function findUsers(
   const limit = 10
   const skip = page * limit
 
-  const users = await UserModel.find(startsWith(filter)).skip(skip).limit(limit)
+  const users = await UserModel.find(applyFilter(filter))
+    .skip(skip)
+    .limit(limit)
   if (!users) throw new Error('No users found')
   return users
 }
 
-export async function findOrCreateUser(loginOptions: {
-  firstName: string
-  lastName: string
+export async function findOrCreateUser({
+  firstName,
+  lastName,
+  patronymic,
+  class: klass,
+  token,
+}: {
+  firstName?: string
+  lastName?: string
   patronymic?: string
   class?: string
+  token?: string
 }) {
-  const user = await UserModel.findOneAndUpdate(
-    loginOptions,
-    {},
-    {
-      new: true,
-      upsert: true,
-    }
-  )
+  console.log('findOrCreateUser:', {
+    firstName,
+    lastName,
+    patronymic,
+    class: klass,
+    token,
+  })
+
+  // console.log('findOrCreateUser', {
+  //   $or: [{ firstName, lastName, patronymic, class: klass }, { token }],
+  // })
+  let user = await UserModel.findOne({
+    $or: [{ token }, { firstName, lastName, patronymic, class: klass }],
+  })
+  console.log('1:', user)
+  if (!user && (token || (firstName && lastName))) {
+    user = await UserModel.findOneAndUpdate(
+      Object.fromEntries(
+        Object.entries({
+          firstName,
+          lastName,
+          patronymic,
+          class: klass,
+        }).filter(([, v]) => v)
+      ),
+      {},
+      {
+        new: true,
+        upsert: true,
+      }
+    )
+  }
+  console.log('2:', user)
   if (!user) {
     throw new Error('User not found')
   }
@@ -71,5 +105,6 @@ export async function findOrCreateUser(loginOptions: {
     user.token = await sign({ id: user.id })
     await user.save()
   }
+  console.log(user)
   return user
 }

@@ -1,4 +1,4 @@
-import { IsDate, IsISO8601, IsOptional, IsString } from 'amala'
+import { IsISO8601, IsString } from 'amala'
 
 export default class BookInfo {
   @IsString()
