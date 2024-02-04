@@ -1,4 +1,5 @@
 import { applyFilter } from '@/helpers/filter'
+import { sign } from '@/helpers/jwt'
 import {
   DocumentType,
   getModelForClass,
@@ -15,6 +16,9 @@ export class Book {
   name!: string
   @prop({ index: true })
   author?: string
+
+  @prop({ index: true, unique: true })
+  token?: string
 
   strippedAndFilled(this: DocumentType<Book>) {
     const stripFields = ['createdAt', 'updatedAt', '__v']
@@ -38,20 +42,31 @@ export async function findBooks(
   return books
 }
 
-export async function findOrCreateBook(bookInfo: {
+export async function findOrCreateBook({
+  name,
+  author,
+  token,
+}: {
   name: string
   author?: string
+  token?: string
 }) {
-  const book = await BookModel.findOneAndUpdate(
-    bookInfo,
-    {},
+  const book = await BookModel.findOne(
     {
-      new: true,
-      upsert: true,
+      $or: [{ token }, { author, name }],
     }
+    // {},
+    // {
+    //   new: true,
+    //   upsert: true,
+    // }
   )
   if (!book) {
     throw new Error('Book not found')
+  }
+  if (!book.token) {
+    book.token = await sign({ id: book.id })
+    await book.save()
   }
   return book
 }

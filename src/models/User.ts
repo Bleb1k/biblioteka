@@ -72,7 +72,7 @@ export async function findOrCreateUser({
   let user = await UserModel.findOne({
     $or: [{ token }, { firstName, lastName, patronymic, class: klass }],
   })
-  if (!user && (token || (firstName && lastName))) {
+  if (!user && !token && firstName && lastName) {
     user = await UserModel.findOneAndUpdate(
       Object.fromEntries(
         Object.entries({
