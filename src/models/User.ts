@@ -7,6 +7,7 @@ import {
 import { omit } from 'lodash'
 import { sign } from '@/helpers/jwt'
 import { applyFilter } from '@/helpers/filter'
+import { notFound } from '@hapi/boom'
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -65,21 +66,12 @@ export async function findOrCreateUser({
   class?: string
   token?: string
 }) {
-  console.log('findOrCreateUser:', {
-    firstName,
-    lastName,
-    patronymic,
-    class: klass,
-    token,
-  })
-
   // console.log('findOrCreateUser', {
   //   $or: [{ firstName, lastName, patronymic, class: klass }, { token }],
   // })
   let user = await UserModel.findOne({
     $or: [{ token }, { firstName, lastName, patronymic, class: klass }],
   })
-  console.log('1:', user)
   if (!user && (token || (firstName && lastName))) {
     user = await UserModel.findOneAndUpdate(
       Object.fromEntries(
@@ -97,14 +89,12 @@ export async function findOrCreateUser({
       }
     )
   }
-  console.log('2:', user)
   if (!user) {
-    throw new Error('User not found')
+    throw notFound('User not found')
   }
   if (!user.token) {
     user.token = await sign({ id: user.id })
     await user.save()
   }
-  console.log(user)
   return user
 }

@@ -1,5 +1,4 @@
 export function applyFilter(filter: Map<string, unknown>) {
-  // console.log('oldFilter: ', filter)
   let newFilter = Object.fromEntries(
     Object.entries(filter)
       .filter(([_, value]) => value !== undefined)
@@ -9,8 +8,6 @@ export function applyFilter(filter: Map<string, unknown>) {
         return a
       })
   )
-
-  // console.log('newFilter: ', newFilter)
 
   return newFilter
 }

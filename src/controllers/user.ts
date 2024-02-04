@@ -1,4 +1,14 @@
-import { Body, Controller, Ctx, Get, Params, Post, Put, Query } from 'amala'
+import {
+  Body,
+  Controller,
+  Ctx,
+  Delete,
+  Get,
+  Params,
+  Post,
+  Put,
+  Query,
+} from 'amala'
 import { Context } from 'koa'
 import { User, UserModel, findOrCreateUser, findUsers } from '@/models/User'
 import { forbidden, notFound } from '@hapi/boom'
@@ -54,7 +64,14 @@ export default class UserController {
     let user = await findOrCreateUser({ token })
     if (!user) throw notFound('User not found')
     user.set(JSON.parse(body.toString()))
-    console.log('save: ' + (await user.save()))
     return user.strippedAndFilled()
+  }
+
+  @Delete('/:token')
+  async delete(@Params('token') token: string) {
+    if (!token) throw forbidden('No token provided')
+    let user = await UserModel.findOneAndDelete({ token })
+    if (!user) throw notFound('User not found')
+    return user
   }
 }
