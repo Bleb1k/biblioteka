@@ -1,5 +1,6 @@
 import { applyFilter } from '@/helpers/filter'
 import { sign } from '@/helpers/jwt'
+import { notFound } from '@hapi/boom'
 import {
   DocumentType,
   getModelForClass,
@@ -38,7 +39,7 @@ export async function findBooks(
   const books = await BookModel.find(applyFilter(filter))
     .skip(skip)
     .limit(limit)
-  if (!books) throw new Error('No books found')
+  if (!books) throw notFound('No books found')
   return books
 }
 
@@ -47,11 +48,11 @@ export async function findOrCreateBook({
   author,
   token,
 }: {
-  name: string
+  name?: string
   author?: string
   token?: string
 }) {
-  const book = await BookModel.findOne(
+  let book = await BookModel.findOne(
     {
       $or: [{ token }, { author, name }],
     }
@@ -61,6 +62,22 @@ export async function findOrCreateBook({
     //   upsert: true,
     // }
   )
+
+  if (!book && !token && name) {
+    book = await BookModel.findOneAndUpdate(
+      Object.fromEntries(
+        Object.entries({
+          name,
+          author,
+        }).filter(([, v]) => v)
+      ),
+      {},
+      {
+        new: true,
+        upsert: true,
+      }
+    )
+  }
   if (!book) {
     throw new Error('Book not found')
   }
