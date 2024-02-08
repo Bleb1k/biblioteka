@@ -64,6 +64,7 @@ export default class UserController {
     let user = await findOrCreateUser({ token })
     if (!user) throw notFound('User not found')
     user.set(JSON.parse(body.toString()))
+    await user.save()
     return user.strippedAndFilled()
   }
 

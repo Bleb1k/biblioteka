@@ -55,6 +55,7 @@ export default class BookshelfController {
     let book = await findOrCreateBook({ token })
     if (!book) throw notFound('Book not found')
     book.set(JSON.parse(body.toString()))
+    await book.save()
     return book.strippedAndFilled()
   }
 
