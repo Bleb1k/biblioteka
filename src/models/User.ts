@@ -49,7 +49,7 @@ export async function findUsers(
   const users = await UserModel.find(applyFilter(filter))
     .skip(skip)
     .limit(limit)
-  if (!users) throw new Error('No users found')
+  if (!users) throw notFound('No users found')
   return users
 }
 

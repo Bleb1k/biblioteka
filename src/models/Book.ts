@@ -79,7 +79,7 @@ export async function findOrCreateBook({
     )
   }
   if (!book) {
-    throw new Error('Book not found')
+    throw notFound('Book not found')
   }
   if (!book.token) {
     book.token = await sign({ id: book.id })

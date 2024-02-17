@@ -1,17 +1,23 @@
-import { IsISO8601, IsString } from 'amala'
+import { IsISO8601, IsOptional, IsString } from 'amala'
 
 export default class BookInfo {
   @IsString()
-  user!: string
+  @IsOptional()
+  token?: string
   @IsString()
-  book!: string
+  @IsOptional()
+  user?: string
   @IsString()
+  @IsOptional()
+  book?: string
+  @IsString()
+  @IsOptional()
   @IsISO8601({ strict: true })
-  returnDate!: string
-  // @IsString()
-  // @IsISO8601({ strict: true })
-  // @IsOptional()
-  // retrievalDate?: string
+  returnDate?: string
+  @IsString()
+  @IsOptional()
+  @IsISO8601({ strict: true })
+  retrievalDate?: string
 }
 
 // this is here for "example" reasons
