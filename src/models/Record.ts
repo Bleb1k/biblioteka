@@ -1,7 +1,9 @@
 import { applyFilter } from '@/helpers/filter'
+import { sign } from '@/helpers/jwt'
 import { Book } from '@/models/Book'
 import { User } from '@/models/User'
 import RecordInfo from '@/validators/RecordInfo'
+import { notFound } from '@hapi/boom'
 import {
   DocumentType,
   Ref,
@@ -24,6 +26,9 @@ export class Record {
   @prop({ index: true })
   retrievalDate?: string
 
+  @prop({ index: true, unique: true })
+  token?: string
+
   strippedAndFilled(this: DocumentType<Record>) {
     const stripFields = ['createdAt', 'updatedAt', '__v']
     return omit(this.toObject(), stripFields)
@@ -42,21 +47,43 @@ export async function findRecords(
   const records = await RecordModel.find(applyFilter(filter))
     .skip(skip)
     .limit(limit)
-  if (!records) throw new Error('No records found')
+    .populate('user path')
+  if (!records) throw notFound('No records found')
+
   return records
 }
 
-export async function findOrCreateRecord(recordInfo: RecordInfo) {
-  const record = await RecordModel.findOneAndUpdate(
-    recordInfo,
-    {},
-    {
-      new: true,
-      upsert: true,
-    }
-  )
+export async function findOrCreateRecord({
+  user,
+  book,
+  returnDate,
+  retrievalDate,
+  token,
+}: RecordInfo) {
+  let record = await RecordModel.findOne({
+    $or: [{ token }, { book, user, returnDate, retrievalDate }],
+  })
+  if (!user && !token && user && book && returnDate) {
+    record = await RecordModel.findOneAndUpdate(
+      Object.fromEntries(
+        Object.entries({ book, user, returnDate, retrievalDate }).filter(
+          ([, v]) => v
+        )
+      ),
+      {},
+      {
+        new: true,
+        upsert: true,
+      }
+    )
+  }
+
   if (!record) {
-    throw new Error('Record not found')
+    throw notFound('User not found')
+  }
+  if (!record.token) {
+    record.token = await sign({ id: record.id })
+    await record.save()
   }
   return record
 }
